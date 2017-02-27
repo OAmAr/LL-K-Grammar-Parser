@@ -16,7 +16,11 @@ class Grammar:
 				return rule[k]
 			else:
 				k-=rule.getLength()
-
+	def getRule(self, V):
+		for rule in self.rules:
+			if rule.getVar() == V:
+				return rule
+		return False
 	def readGrammar(self, f):
 		try:
 			with open(f, 'r') as _file:

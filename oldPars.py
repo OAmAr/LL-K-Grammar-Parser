@@ -178,23 +178,14 @@ class Parser:
 		if symbol in self.firstsets:
 			return self.firstsets[symbol]
 		if symbol not in self._non_terms:
-			self.firstsets[symbol] = dict(symbol:set([0])) 
-			return self.firstsets[symbol]
+			self.firstsets[symbol] = set([symbol])
+			return set([symbol])
 
-		firstS = dict()
+		firstS = set()
 		rule = self.gram.getRule(symbol)
 		if rule == False:
 			print("Error, no rule: ", symbol)			
 			raise(RuntimeError)
-		_range = self.gram.getRuleRange(symbol)
-		_range[0]+=1
-		_range[1]+=1
-
-		for sub_rule_i in _range:
-			sub = self.gram[sub_rule_i]
-			term = sub.getYield()[0][0]
-			firstS[sub.getVar()] = self.firstset[sub.getVar()][sub.getYield
-
 		for sub in self.gram.getRule(symbol).getYield():
 			firstS= firstS | self.firstSet(sub[0])
 		
