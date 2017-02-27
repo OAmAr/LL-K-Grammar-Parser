@@ -5,8 +5,10 @@ class Grammar:
 		self.length = 0
 		self.rules = [] #consider dictionary,but adds sme redundancy
 		#initialize with a call to readGrammar	
+	
 	def getLength(self):
 		return self.length
+	
 	def __getitem__(self, k):
 		if k > self.length:
 			print("No such rule")
@@ -16,11 +18,20 @@ class Grammar:
 				return rule[k]
 			else:
 				k-=rule.getLength()
+	def getRuleRange(self, V):
+		ret=(None,None)
+		for i in range(self.length):
+			if rule[i].getVar() == V:
+				ret[0]=i
+				ret[1]=i+rule[i].getLength()
+		return ret
+
 	def getRule(self, V):
 		for rule in self.rules:
 			if rule.getVar() == V:
 				return rule
 		return False
+	
 	def readGrammar(self, f):
 		try:
 			with open(f, 'r') as _file:
@@ -64,6 +75,7 @@ class Grammar:
 				break
 	def getRules(self):
 		return self.rules
+	
 	def addRule(self, line):
 		to_add = Rule(line)
 		for rule in self.rules:

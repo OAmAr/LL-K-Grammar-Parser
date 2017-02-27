@@ -193,6 +193,7 @@ class Parser:
 		for sub_rule_i in _range:
 			sub = self.gram[sub_rule_i]
 			term = sub.getYield()[0][0]
+			rec = self.firstSet(term) #this is dict of 
 			firstS[sub.getVar()] = self.firstset[sub.getVar()][sub.getYield
 
 		for sub in self.gram.getRule(symbol).getYield():
