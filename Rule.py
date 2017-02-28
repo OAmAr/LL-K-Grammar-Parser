@@ -17,7 +17,6 @@ class Rule:
 	def addYield(self, line):
 		for yld in line.split("|"):
 			self.yld.append(yld)
-			#self.length+=1
 
 	def parse(self, line):
 		if line == None:
@@ -52,7 +51,6 @@ class Rule:
 		sub.length = 1
 		sub.non = self.getVar()
 		sub.yld = [self.yld[k-1]]
-		print(k,self.yld)
 		return sub
 	def getLength(self):
 		return self.length
