@@ -14,7 +14,7 @@ class TestParser(unittest.TestCase):
 		#print(P.firstsets)
 		#P.describe()
 	
-	def	atestCreate1(self):
+	def	testCreate1(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')
@@ -22,30 +22,30 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(P._non_terms, set(["S", "A"]))
 		self.assertEqual(P._terms, set(["0", "1", "$"]))
 	
-	def testtable1(self):
+	def testtable1_ll1(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')
 		P.setGrammar(G)
-		print('Parsetable: ', P.parsetable)
-		#self.assertEqual(P.parsetable, {'0' : {'S':set([1]),'A': set()} , '1':{'S':set(),'A': set([3])}, '$': {'S':set(),'A': set()}})
+		#print('Parsetable: ', P.parsetable)
+		self.assertEqual(P.parsetable, {'0' : {'S':set([1]),'A': set()} , '1':{'S':set([2]),'A': set([3])}, '$': {'S':set([2]),'A': set()}})
 
-	def atesttable2(self):
+	def testtable2_ll2(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram2.txt')
 		P.setGrammar(G)
 		#print(P.parsetable)
-		self.assertEqual(P.parsetable, {'0' : {'S':set([1]),'A': set()} , '1':{'S':set([3]),'A': set([4])}, '$': {'S':set(),'A': set()}})
-
-	def atestParser_no_follow(self):
+		self.assertEqual(P.parsetable, {'0' : {'S':set([1]),'A': set()} , '1':{'S':set([2,3]),'A': set([4])}, '$': {'S':set([2]),'A': set()}})
+		self.assertFalse(P.preParse())
+	def testParser_no_follow(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')
 		P.setGrammar(G)
 		self.assertTrue(P.parse("01"))
 		self.assertFalse(P.parse("0"))
-		#self.assertTrue(P.parse("0011"))
+		self.assertTrue(P.parse("0011"))
 	
 	def atestParser_first(self):
 		P=Parser()
@@ -53,7 +53,7 @@ class TestParser(unittest.TestCase):
 		G.readGrammar('gram1.txt')
 		P.setGrammar(G)
 		P.buildFirstsets()
-		print(P.firstsets)
+		#print(P.firstsets)
 		#print(P.firstSet('S'))
 
 class TestGrammar(unittest.TestCase):

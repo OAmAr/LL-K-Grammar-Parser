@@ -1,8 +1,9 @@
-import Grammar
+from Grammar import Grammar
 from copy import deepcopy
+from time import sleep
 class Parser:
 	def __init__(self,):
-		self.gram = None
+		self.gram = Grammar()
 		self.look_ahead = 1
 		self.stack = ["$"]			#list stack, append pushes, 
 		self._non_terms=set()
@@ -32,14 +33,17 @@ class Parser:
 		print("It is using the following grammar: ")
 		print(self.gram)
 		self.describeParse()
-		self.describeStack()
+		#self.describeStack()
 	
 	def describeParse(self):
-		return		
+		print(self.parsetable)		
 
 	def describeStack(self):
 		print("Current Stack:")
 		print("bottom ", self.stack, " top")
+	
+	def resetStack(self):
+		self.stack = ["$","S"]
 
 	def setNonTerms(self):
 		self._non_terms = set()
@@ -60,29 +64,6 @@ class Parser:
 		self.parsetable = dict(zip(self._terms, inn_cop))
 		#dict of {term:{non_term:(rule_number)}
 
-
-#	def populateParsetable(self):
-#		self.resetParsetable()
-#		#print("")
-#		#print("Firstsets: ", self.firstsets)
-#		#print("Followsets: ", self.followsets)
-#		keys_considered = set()	
-#		if True:
-#			return
-#		#	for term in ##iterate through keys in self.first, check if null, if null add follow set and go on 
-#
-#		for rule_i in range(1, self.gram.getLength()+1):
-#			print("Considering rule: ", rule_i, self.gram[rule_i])
-#			key = self.gram[rule_i].getVar()
-#			if key not in keys_considered:
-#				keys_considered.add(key)
-#				for term in self.firstsets[key]:
-#					if term == "/":
-#						for _term in self.followsets[key]:
-#							self.parsetable[_term][key].add(rule_i) #how to get the index of rule which empty sting comes from
-#					else:
-#						self.parsetable[term][key].add(rule_i)
-#
 
 	def populateParsetable(self):
 		self.resetParsetable()
@@ -108,29 +89,6 @@ class Parser:
 			self.followsets = nextset
 			nextset = self.followset('S')
 
-	def oldfollowset(self, symbol):
-		nextset=deepcopy(self.followsets)
-		if symbol == "S":
-			nextset['S'].add('$') #start symbol always followed by $
-		
-		for rule_i in range(1,self.gram.getLength()+1):
-			rule = self.gram[rule_i]
-			yld = rule.getYield()[0]
-			for i in range(len(yld)):
-				char = yld[i]
-				if char in self._non_terms:
-					#apply rules:
-					if i+1 == len(yld) and char!= rule.getVar():
-						#add follow of lhs
-						nextset[char] = nextset[char] | nextset[rule.getVar()]
-						break #break because nothing else next to it
-					elif "/" in self.firstsets[yld[i+1]]:
-						#if nextstring can be empty, add its follow
-						nextset[char] = nextset[char] | nextset[rule.getVar()]
-					#always add first of next string to follow
-					nextset[char] = nextset[char] | (self.firstSet(yld[i+1]) - set(['/']))
-		return nextset
-	
 
 	def followset(self, symbol):
 		nextset = deepcopy(self.followsets)
@@ -190,5 +148,55 @@ class Parser:
 
 		return firstS
 
-	
+	def preParse(self):
+		self.gram.removeRecursion() #currently just removes redundancy
+		for top in self.parsetable:
+			for sub in self.parsetable[top]:
+				if len(self.parsetable[top][sub])>1:
+					return False
+		return True
 
+	def parse(self, string):
+		if not self.preParse():
+			print("WARNING, THIS GRAMMAR IS NOT LL[1] AND/OR RECURSIVE AND SO THIS IS LIKELY INNACURATE OR NON-TERMINATING")
+		#self.describeParse()
+		self.describe()
+		string+="$"
+		self.resetStack()
+		stack = self.stack
+		ops=[]
+		i=0
+		print("Parsing", string)
+		while i < len(string):
+			#if stack ==[]:
+			#	return True
+			char= string[i]
+			print("Considering: ", char)
+			self.describeStack()
+			#sleep(1)
+			if char == stack[-1]:
+				
+				print("Char matches, popping: ", stack.pop())
+				i+=1
+			else:
+				try:
+					rule_i = list(self.parsetable[char][stack.pop()])[0]
+				except (IndexError, ValueError, KeyError):
+					print("\n\nRejected: ", string[:-1], "\n\n")
+					return False
+				ops.append(rule_i)
+				print("Rule ", rule_i, "matches: ", str(self.gram[rule_i]))
+				for t in self.gram[rule_i].getYield()[0][::-1]:
+					if t == "/":
+						break
+					else:
+						stack.append(t)
+						print("Pushing: ", t)
+			#sleep(1.5)
+
+		if stack ==[]:
+			print("\n\nAccepted: ", string[:-1], "\n\n")
+			return True
+		else:
+			print("\n\nRejected: ", string[:-1], "\n\n")
+			return False

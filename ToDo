@@ -1,7 +1,9 @@
+FIX RANGE ERROR RULES
+pretty out
+preetty code
+
+
 eliminate left recursion
 eliminate ambig
-impliment LL(1) parser
-impliment Ll(k) parser hopefully 
-ADD FOLLOW TO PARSING TABLE
 
 

@@ -14,14 +14,16 @@ class Grammar:
 			print("No such rule")
 			return
 		for rule in self.rules:
-			if k <= rule.getLength():
+			if k < rule.getLength():
 				return rule[k]
 			else:
 				k-=rule.getLength()
 	def getRuleRange(self, V):
+		#print(self)
 		ret=[None,None]
 		for i in range(1,self.length+1):
 			#print(V, self[i].getVar())
+			print(i, self[i])
 			if 	self[i].getVar() == V and ret[0] == None:
 				ret[0]=i
 			if self[i].getVar()!= V and ret[0] != None:
@@ -38,6 +40,8 @@ class Grammar:
 		return False
 	
 	def readGrammar(self, f):
+		self.length=0
+		self.rules=[]
 		try:
 			with open(f, 'r') as _file:
 				lines = _file.readlines()
@@ -83,12 +87,19 @@ class Grammar:
 	
 	def addRule(self, line):
 		to_add = Rule(line)
+		#print("adding", to_add)
 		for rule in self.rules:
 			if to_add.getVar() == rule.getVar():
 				for sub in to_add.getYield():
 					if sub not in rule.getYield():
 						self.length+=1
 						rule.addYield(sub)
+						print("rule now" , rule)
+						print("yield", rule.getYield())
+						print(self.rules)
 				return
+
 		self.rules.append(to_add)	
+		#print(self.rules[-1].getYield())
+		#print(self[0])
 		self.length+=to_add.length
