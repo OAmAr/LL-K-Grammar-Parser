@@ -17,8 +17,8 @@ class Parser:
 		self.setTerms()
 		self.stack = ['$', 'S']
 		self.buildFirstsets()
-		#self.buildFollowsets()
-		#self.populateParsetable()
+		self.buildFollowsets()
+		self.populateParsetable()
 	
 	def setLook_ahead(self, k):
 		self.look_ahead = 1
@@ -61,29 +61,48 @@ class Parser:
 		#dict of {term:{non_term:(rule_number)}
 
 
+#	def populateParsetable(self):
+#		self.resetParsetable()
+#		#print("")
+#		#print("Firstsets: ", self.firstsets)
+#		#print("Followsets: ", self.followsets)
+#		keys_considered = set()	
+#		if True:
+#			return
+#		#	for term in ##iterate through keys in self.first, check if null, if null add follow set and go on 
+#
+#		for rule_i in range(1, self.gram.getLength()+1):
+#			print("Considering rule: ", rule_i, self.gram[rule_i])
+#			key = self.gram[rule_i].getVar()
+#			if key not in keys_considered:
+#				keys_considered.add(key)
+#				for term in self.firstsets[key]:
+#					if term == "/":
+#						for _term in self.followsets[key]:
+#							self.parsetable[_term][key].add(rule_i) #how to get the index of rule which empty sting comes from
+#					else:
+#						self.parsetable[term][key].add(rule_i)
+#
+
 	def populateParsetable(self):
 		self.resetParsetable()
-		#print("")
-		#print("Firstsets: ", self.firstsets)
-		#print("Followsets: ", self.followsets)
-		keys_considered = set()	
-		if True:
+		print("")
+		print("First sets: " , self.firstsets)
+		print("Followsets: " , self.followsets)
+		keys_considered= set()
+		for non_term in self._non_terms:
 			return
-		#	for term in ##iterate through keys in self.first, check if null, if null add follow set and go on 
 
-		for rule_i in range(1, self.gram.getLength()+1):
-			print("Considering rule: ", rule_i, self.gram[rule_i])
-			key = self.gram[rule_i].getVar()
-			if key not in keys_considered:
-				keys_considered.add(key)
-				for term in self.firstsets[key]:
-					if term == "/":
-						for _term in self.followsets[key]:
-							self.parsetable[_term][key].add(rule_i) #how to get the index of rule which empty sting comes from
-					else:
-						self.parsetable[term][key].add(rule_i)
+	def buildFollowsets(self):
+		self.followsets = {}
+		for rule in self.gram.getRules():
+			self.followsets[rule.getVar()]= set()
+		nextset = self.followset('S')
+		while nextset != self.followsets:
+			self.followsets = nextset
+			nextset = self.followset('S')
 
-	def followset(self, symbol):
+	def oldfollowset(self, symbol):
 		nextset=deepcopy(self.followsets)
 		if symbol == "S":
 			nextset['S'].add('$') #start symbol always followed by $
@@ -106,25 +125,30 @@ class Parser:
 					nextset[char] = nextset[char] | (self.firstSet(yld[i+1]) - set(['/']))
 		return nextset
 	
-	def oldfollowset(self, symbol):
-		if self.followsets[symbol] != set():
-			return self.followsets[symbol] #already computed
-		
+
+	def followset(self, symbol):
+		nextset = deepcopy(self.followsets)
 		if symbol == "S":
-			self.followsets['S'].add("$") #start symbol always gets
-		
-		for rule in self.gram.getRules(): #for each subrule
-			print(rule)
-			for sub in rule.getYield():
-				for i in range(len(sub)): #check each character
-					if sub[i] in self._non_terms: #if its a nonterminal
-						if i+1 == len(sub) or "/" in self.firstsets[sub[i+1]]: #if its at the end of the rule and not its own rule, it gets the follow of the rule
-							if rule.getVar() != sub[i]: #dont want recurse
-								self.followsets[sub[i]] | self.followset(rule.getVar()) #rule 2, if end of production, folowed by follow of lhs
-						
-							if i+1 == len(sub):
-								break #if we're at end of the rule just break instead of doing next tests
-						self.followsets[sub[i]] | self.firstsets[sub[i+1]]
+			nextset['S'].add('$')
+		for rule_i in range(1,self.gram.getLength()+1):
+			rule = self.gram[rule_i]
+			yld = rule.getYield()[0]
+			for i in range(len(yld)):
+				char = yld[i]
+				if char in self._non_terms:
+					if i+1 == len(yld) and char!=rule.getVar():
+						nextset[char] = nextset[char] | nextset[rule.getVar()]
+						break
+					else:
+						remove = yld[i+1] in self.firstsets
+						if "/" in self.firstSet(yld[i+1]):
+							nextset[char] = nextset[char] | nextset[rule.getVar()]
+						nextset[char] = nextset[char] | set(self.firstSet(yld[i+1])) - set(['/'])
+						if remove:
+							del self.firstsets[yld[i+1]]
+			return nextset
+
+
 
 
 	def buildFirstsets(self): #builds the greater set of followsets
@@ -135,7 +159,7 @@ class Parser:
 	
 	
 	def firstSet(self, symbol):
-		print("Called on ", symbol)
+		#print("Called on ", symbol)
 		if symbol in self.firstsets: #base case 1
 			return self.firstsets[symbol]
 		if symbol not in self._non_terms: #base case 2
@@ -147,13 +171,13 @@ class Parser:
 		
 		firstS=dict() #empty dictionary
 		#print("")
-		print(symbol,_range)
+		#print(symbol,_range)
 		for rule_i in range(_range[0],_range[1]):
 			rule = self.gram[rule_i]
-			print("Considering: ", rule)
+		#	print("Considering: ", rule)
 			yld  = rule.getYield()[0]
 			for key in self.firstSet(yld[0]):
-				print("Adding " , key, "to", symbol)
+		#		print("Adding " , key, "to", symbol)
 				if key not in firstS:
 					firstS[key]=set()
 				firstS[key].add(rule_i)

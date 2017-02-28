@@ -11,10 +11,10 @@ class TestParser(unittest.TestCase):
 		G = Grammar()
 		G.readGrammar('gram1.txt')
 		P.setGrammar(G)
-		print(P.firstsets)
+		#print(P.firstsets)
 		#P.describe()
 	
-	def atestCreate1(self):
+	def	testCreate1(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')
@@ -22,12 +22,12 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(P._non_terms, set(["S", "A"]))
 		self.assertEqual(P._terms, set(["0", "1", "$"]))
 	
-	def atesttable1(self):
+	def testtable1(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')
 		P.setGrammar(G)
-		print(P.parsetable)
+		print('Parsetable: ', P.parsetable)
 		#self.assertEqual(P.parsetable, {'0' : {'S':set([1]),'A': set()} , '1':{'S':set(),'A': set([3])}, '$': {'S':set(),'A': set()}})
 
 	def atesttable2(self):
