@@ -5,15 +5,16 @@ from Grammar import Grammar
 from Parser import Parser
 from Rule import Rule
 
-class TestParser():#unittest.TestCase):
-	def atestCreate(self):
+class TestParser(unittest.TestCase):
+	def testCreate(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')
 		P.setGrammar(G)
+		print(P.firstsets)
 		#P.describe()
 	
-	def atestCreate(self):
+	def atestCreate1(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')
@@ -21,7 +22,7 @@ class TestParser():#unittest.TestCase):
 		self.assertEqual(P._non_terms, set(["S", "A"]))
 		self.assertEqual(P._terms, set(["0", "1", "$"]))
 	
-	def testtable1(self):
+	def atesttable1(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')
@@ -63,7 +64,7 @@ class TestGrammar(unittest.TestCase):
 	def test_range(self):
 		G=Grammar()
 		G.readGrammar('gram1.txt')
-		self.assertEqual(G.getRuleRange('A'), set([3]))
+		self.assertEqual(G.getRuleRange('A'), [3,4])
 	def test_remove(self):
 		G =Grammar()
 		G.addRule("A	A | /")

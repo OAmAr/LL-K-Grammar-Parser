@@ -28,8 +28,8 @@ class Grammar:
 				ret[1]=i
 		#print(ret)
 		if ret[1] == None:
-			ret[1] = i
-		return set(ret)
+			ret[1] = i+1
+		return ret
 
 	def getRule(self, V):
 		for rule in self.rules:

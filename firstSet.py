@@ -13,7 +13,7 @@ def firstSet(self, symbol):
 		self.firstsets[symbol] = dict(symbol:set([False])
 		return self.firstsets[symbol]
 	
-	_range = self.gram.getRule(symbol)
+	_range = self.gram.getRuleRange(symbol)
 	#this is the range of rules in our grammar that come from symbol
 	_range[0]+=1
 	_range[1]+=1 #because i indexed rules it stupidly

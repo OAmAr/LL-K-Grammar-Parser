@@ -17,8 +17,8 @@ class Parser:
 		self.setTerms()
 		self.stack = ['$', 'S']
 		self.buildFirstsets()
-		self.buildFollowsets()
-		self.populateParsetable()
+		#self.buildFollowsets()
+		#self.populateParsetable()
 	
 	def setLook_ahead(self, k):
 		self.look_ahead = 1
@@ -63,9 +63,9 @@ class Parser:
 
 	def populateParsetable(self):
 		self.resetParsetable()
-		print("")
-		print("Firstsets: ", self.firstsets)
-		print("Followsets: ", self.followsets)
+		#print("")
+		#print("Firstsets: ", self.firstsets)
+		#print("Followsets: ", self.followsets)
 		keys_considered = set()	
 		if True:
 			return
@@ -125,3 +125,40 @@ class Parser:
 							if i+1 == len(sub):
 								break #if we're at end of the rule just break instead of doing next tests
 						self.followsets[sub[i]] | self.firstsets[sub[i+1]]
+
+
+	def buildFirstsets(self): #builds the greater set of followsets
+		self.firstsets={}
+		for rule in self.gram.getRules():
+			self.firstsets[rule.getVar()] = self.firstSet(rule.getVar())
+		#print(self.firstsets)
+	
+	
+	def firstSet(self, symbol):
+		print("Called on ", symbol)
+		if symbol in self.firstsets: #base case 1
+			return self.firstsets[symbol]
+		if symbol not in self._non_terms: #base case 2
+			 self.firstsets[symbol] = {symbol:set([False])} #dont come from a rule, just symbol
+			 return self.firstsets[symbol]
+
+
+		_range = self.gram.getRuleRange(symbol) #get range as a set of integers where rule starts with symbol
+		
+		firstS=dict() #empty dictionary
+		#print("")
+		print(symbol,_range)
+		for rule_i in range(_range[0],_range[1]):
+			rule = self.gram[rule_i]
+			print("Considering: ", rule)
+			yld  = rule.getYield()[0]
+			for key in self.firstSet(yld[0]):
+				print("Adding " , key, "to", symbol)
+				if key not in firstS:
+					firstS[key]=set()
+				firstS[key].add(rule_i)
+
+		return firstS
+
+	
+
