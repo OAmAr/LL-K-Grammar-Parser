@@ -19,12 +19,17 @@ class Grammar:
 			else:
 				k-=rule.getLength()
 	def getRuleRange(self, V):
-		ret=(None,None)
-		for i in range(self.length):
-			if rule[i].getVar() == V:
+		ret=[None,None]
+		for i in range(1,self.length+1):
+			#print(V, self[i].getVar())
+			if 	self[i].getVar() == V and ret[0] == None:
 				ret[0]=i
-				ret[1]=i+rule[i].getLength()
-		return ret
+			if self[i].getVar()!= V and ret[0] != None:
+				ret[1]=i
+		#print(ret)
+		if ret[1] == None:
+			ret[1] = i
+		return set(ret)
 
 	def getRule(self, V):
 		for rule in self.rules:

@@ -5,7 +5,7 @@ from Grammar import Grammar
 from Parser import Parser
 from Rule import Rule
 
-class TestParser(unittest.TestCase):
+class TestParser():#unittest.TestCase):
 	def atestCreate(self):
 		P=Parser()
 		G = Grammar()
@@ -60,7 +60,10 @@ class TestGrammar(unittest.TestCase):
 		G = Grammar()
 		G.addRule("A	A | /")
 		self.assertEqual(str(G), "A ---> A | /")
-
+	def test_range(self):
+		G=Grammar()
+		G.readGrammar('gram1.txt')
+		self.assertEqual(G.getRuleRange('A'), set([3]))
 	def test_remove(self):
 		G =Grammar()
 		G.addRule("A	A | /")
