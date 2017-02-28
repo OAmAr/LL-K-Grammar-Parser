@@ -15,18 +15,17 @@ class Grammar:
 			return
 		for rule in self.rules:
 			if k <= rule.getLength():
+	#			print("K is less than rule, so printing")
 				return rule[k]
 			else:
 				k-=rule.getLength()
 	def getRuleRange(self, V):
 		ret=[None,None]
 		for i in range(1,self.length+1):
-			#print(V, self[i].getVar())
 			if 	self[i].getVar() == V and ret[0] == None:
 				ret[0]=i
 			if self[i].getVar()!= V and ret[0] != None:
 				ret[1]=i
-		#print(ret)
 		if ret[1] == None:
 			ret[1] = i+1
 		return ret
@@ -83,6 +82,7 @@ class Grammar:
 	
 	def addRule(self, line):
 		to_add = Rule(line)
+	#	print("to_add is", to_add, "from", line)
 		for rule in self.rules:
 			if to_add.getVar() == rule.getVar():
 				for sub in to_add.getYield():
@@ -90,5 +90,7 @@ class Grammar:
 						self.length+=1
 						rule.addYield(sub)
 				return
-		self.rules.append(to_add)	
+		self.rules.append(to_add)
+	#	print("adding", to_add, "length is", to_add.length)
 		self.length+=to_add.length
+		

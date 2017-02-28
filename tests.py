@@ -47,7 +47,7 @@ class TestParser(unittest.TestCase):
 		self.assertFalse(P.parse("0"))
 		self.assertTrue(P.parse("0011"))
 	
-	def atestParser_first(self):
+	def testParser_first(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')
@@ -65,6 +65,18 @@ class TestGrammar(unittest.TestCase):
 		G=Grammar()
 		G.readGrammar('gram1.txt')
 		self.assertEqual(G.getRuleRange('A'), [3,4])
+
+	def test_index1(self):
+		#print("ACTIVE INVESTIGATION\n\n\n")
+
+		G=Grammar()
+		G.readGrammar('gram3.txt')
+		#print(G.getRules()[0].length, G.getRules()[0], "length of S rule")
+		#print(G[1])
+		#print(G[2])
+		#print(G[3])
+		#print("k done")
+
 	def test_remove(self):
 		G =Grammar()
 		G.addRule("A	A | /")

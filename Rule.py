@@ -17,6 +17,7 @@ class Rule:
 	def addYield(self, line):
 		for yld in line.split("|"):
 			self.yld.append(yld)
+			self.length+=1
 
 	def parse(self, line):
 		if line == None:
