@@ -6,7 +6,7 @@ from Parser import Parser
 from Rule import Rule
 
 class TestParser(unittest.TestCase):
-	def testCreate(self):
+	def atestCreate(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')
@@ -14,7 +14,7 @@ class TestParser(unittest.TestCase):
 		#print(P.firstsets)
 		#P.describe()
 	
-	def	testCreate1(self):
+	def	atestCreate1(self):
 		P=Parser()
 		G = Grammar()
 		G.readGrammar('gram1.txt')

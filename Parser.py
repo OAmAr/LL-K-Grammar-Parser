@@ -86,12 +86,18 @@ class Parser:
 
 	def populateParsetable(self):
 		self.resetParsetable()
-		print("")
-		print("First sets: " , self.firstsets)
-		print("Followsets: " , self.followsets)
+		#`print("")
+		#print("First sets: " , self.firstsets)
+		#print("Followsets: " , self.followsets)
 		keys_considered= set()
 		for non_term in self._non_terms:
-			return
+			for term in self.firstsets[non_term]: #term is the keys
+				if term == "/":
+					for _term in self.followsets[non_term]:
+						self.parsetable[_term][non_term]=self.parsetable[_term][non_term] | self.firstsets[non_term][term]
+				else:
+					self.parsetable[term][non_term] = self.parsetable[term][non_term] | self.firstsets[non_term][term]
+		return
 
 	def buildFollowsets(self):
 		self.followsets = {}
@@ -144,8 +150,8 @@ class Parser:
 						if "/" in self.firstSet(yld[i+1]):
 							nextset[char] = nextset[char] | nextset[rule.getVar()]
 						nextset[char] = nextset[char] | set(self.firstSet(yld[i+1])) - set(['/'])
-						if remove:
-							del self.firstsets[yld[i+1]]
+						#if remove:
+						#	del self.firstsets[yld[i+1]]
 			return nextset
 
 
