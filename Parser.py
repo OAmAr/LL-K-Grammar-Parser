@@ -26,7 +26,7 @@ class Parser:
 		print("Look ahead currently limited to 1")
 	
 	def describe(self):
-		print("\nThis is a LL(%d) shift reducing grammar parser" % (self.look_ahead))
+		print("\nThis is a LL(%d) shift-reduce grammar parser" % (self.look_ahead))
 		if self.gram == None:
 			print("No grammar set")
 			return
@@ -36,11 +36,13 @@ class Parser:
 		#self.describeStack()
 	
 	def describeParse(self):
-		print(self.parsetable)		
+		print("Parsetable:", self.parsetable)
+		print("")
 
 	def describeStack(self):
 		print("Current Stack:")
 		print("bottom ", self.stack, " top")
+		input()
 	
 	def resetStack(self):
 		self.stack = ["$","S"]
@@ -167,35 +169,38 @@ class Parser:
 		ops=[]
 		i=0
 		print("Parsing", string)
+		input()
+
 		while i < len(string):
-			#if stack ==[]:
-			#	return True
 			char= string[i]
-			print("Considering: ", char)
+			print("Remaining String: ", string[i:])
 			self.describeStack()
 			#sleep(1)
 			if char == stack[-1]:
 				
-				print("Char matches, popping: ", stack.pop())
+				print("Reducing Stack, read:  ",string[i], "popping: ", stack.pop())
 				i+=1
 			else:
 				try:
 					rule_i = list(self.parsetable[char][stack.pop()])[0]
 				except (IndexError, ValueError, KeyError):
+					print("No valid rule. No shift/reduce possible")
 					print("\n\nRejected: ", string[:-1], "\n\n")
 					return False
 				ops.append(rule_i)
 				print("Rule ", rule_i, "matches: ", str(self.gram[rule_i]))
+				print("Shifting Stack, Pushing: ", self.gram[rule_i].getYield()[0])
 				for t in self.gram[rule_i].getYield()[0][::-1]:
 					if t == "/":
 						break
 					else:
 						stack.append(t)
-						print("Pushing: ", t)
+						#print("Pushing: ", t)
 			#sleep(1.5)
-
+			input()
 		if stack ==[]:
 			print("\n\nAccepted: ", string[:-1], "\n\n")
+			print("Transitions: ", ops)
 			return True
 		else:
 			print("\n\nRejected: ", string[:-1], "\n\n")
